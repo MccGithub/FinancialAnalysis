@@ -803,6 +803,7 @@ class growthAnalysisBox(Gtk.Box):
         ]
         self.add(getLineChartImg(x, y, "净利润增长率变化趋势", "净利润增长率", "年份", "增长率"))
 
+
 class operationalCapabilityAnalysisBox(Gtk.Box):
     data = Data()
 
@@ -957,6 +958,77 @@ class operationalCapabilityAnalysisBox(Gtk.Box):
             temporary[4]
         ]
         self.add(getLineChartImg(x, y, "总资产周转率趋势图", "总资产周转率", "年份", "周转率"))
+
+
+class solvencyAnalysisBox(Gtk.Box):
+    """偿债能力分析的内容"""
+    data = Data()
+
+    def __init__(self, ts_code):
+        super(Gtk.Box, self).__init__()
+        self.set_orientation(Gtk.Orientation.VERTICAL)
+        self.tsCode = ts_code
+
+        cur_year = getCurrentYear()
+        financialIndicator_five_age = self.data.getFinancialIndicator(self.tsCode, cur_year - 5)
+        financialIndicator_four_age = self.data.getFinancialIndicator(self.tsCode, cur_year - 4)
+        financialIndicator_three_age = self.data.getFinancialIndicator(self.tsCode, cur_year - 3)
+        financialIndicator_two_age = self.data.getFinancialIndicator(self.tsCode, cur_year - 2)
+        financialIndicator_one_age = self.data.getFinancialIndicator(self.tsCode, cur_year - 1)
+
+        storeOfSolvencyAnalysis = Gtk.ListStore(str, str, str, str, str, str)
+        solvencyAnalysisStatement = Gtk.TreeView(storeOfSolvencyAnalysis)
+
+        center_one = 38
+        center_other = 15
+        column_proj = Gtk.TreeViewColumn("指标".center(center_one))
+        column_five = Gtk.TreeViewColumn((str(cur_year - 5) + "年").center(center_other))
+        column_four = Gtk.TreeViewColumn((str(cur_year - 4) + "年").center(center_other))
+        column_three = Gtk.TreeViewColumn((str(cur_year - 3) + "年").center(center_other))
+        column_two = Gtk.TreeViewColumn((str(cur_year - 2) + "年").center(center_other))
+        column_one = Gtk.TreeViewColumn((str(cur_year - 1) + "年").center(center_other))
+
+        indicators = Gtk.CellRendererText()
+        five_ago = Gtk.CellRendererText()
+        four_ago = Gtk.CellRendererText()
+        three_ago = Gtk.CellRendererText()
+        two_ago = Gtk.CellRendererText()
+        one_ago = Gtk.CellRendererText()
+        column_proj.pack_start(indicators, True)
+        column_five.pack_start(five_ago, True)
+        column_four.pack_start(four_ago, True)
+        column_three.pack_start(three_ago, True)
+        column_two.pack_start(two_ago, True)
+        column_one.pack_start(one_ago, True)
+        column_proj.add_attribute(indicators, "text", 0)
+        column_five.add_attribute(five_ago, "text", 1)
+        column_four.add_attribute(four_ago, "text", 2)
+        column_three.add_attribute(three_ago, "text", 3)
+        column_two.add_attribute(two_ago, "text", 4)
+        column_one.add_attribute(one_ago, "text", 5)
+        solvencyAnalysisStatement.append_column(column_proj)
+        solvencyAnalysisStatement.append_column(column_five)
+        solvencyAnalysisStatement.append_column(column_four)
+        solvencyAnalysisStatement.append_column(column_three)
+        solvencyAnalysisStatement.append_column(column_two)
+        solvencyAnalysisStatement.append_column(column_one)
+
+        self.add(Gtk.Label("偿债能力指标", name="center"))
+        self.add(solvencyAnalysisStatement)
+
+        CR_five = getCurrentRatio(financialIndicator_five_age)
+        CR_four = getCurrentRatio(financialIndicator_four_age)
+        CR_three = getCurrentRatio(financialIndicator_three_age)
+        CR_two = getCurrentRatio(financialIndicator_two_age)
+        CR_one = getCurrentRatio(financialIndicator_one_age)
+
+        storeOfSolvencyAnalysis.append(["流动比率".center(center_one),
+                                                     CR_five.center(center_other),
+                                                     CR_four.center(center_other),
+                                                     CR_three.center(center_other),
+                                                     CR_two.center(center_other),
+                                                     CR_one.center(center_other)
+                                                     ])
 
 
 class Content(Gtk.ScrolledWindow):
@@ -1129,13 +1201,12 @@ class Content(Gtk.ScrolledWindow):
         operationalCapabilityAnalysisRow.add(operationalCapabilityAnalysisExp)
         self.contentList.insert(operationalCapabilityAnalysisRow, -1)
 
-        修改下面几行的变量名:偿债能力分析
-        operationalCapabilityAnalysisExp = Gtk.Expander.new("operational capability analysis")  # 偿债能力分析
-        operationalCapabilityAnalysisExp.set_expanded(True)
-        operationalCapabilityAnalysisExp.add(operationalCapabilityAnalysisBox(ts_code))
-        operationalCapabilityAnalysisRow = Gtk.ListBoxRow()
-        operationalCapabilityAnalysisRow.add(operationalCapabilityAnalysisExp)
-        self.contentList.insert(operationalCapabilityAnalysisRow, -1)
+        solvencyAnalysisExp = Gtk.Expander.new("Solvency analysis")  # 偿债能力分析
+        solvencyAnalysisExp.set_expanded(True)
+        solvencyAnalysisExp.add(solvencyAnalysisBox(ts_code))
+        solvencyAnalysisRow = Gtk.ListBoxRow()
+        solvencyAnalysisRow.add(solvencyAnalysisExp)
+        self.contentList.insert(solvencyAnalysisRow, -1)
 
 
         self.add(self.contentList)

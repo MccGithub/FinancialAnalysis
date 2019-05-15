@@ -2,7 +2,7 @@ import os
 import gi
 import re
 import math
-import talib
+# import talib
 import pandas as pd
 from pylab import *
 from datetime import datetime
@@ -472,3 +472,29 @@ def getTotalAssetTurnover(dataFrame):
         else:
             return " "
 
+
+def getCurrentRatio(dataFrame):
+    if dataFrame is None:
+        return " "
+    if isinstance(dataFrame, pd.DataFrame):
+        if not dataFrame.empty:
+            current_ratio = dataFrame['current_ratio'][1]  # 流动比率
+            if isinstance(current_ratio, np.float64):
+                current_ratio = str(current_ratio)
+            if not current_ratio.strip():  # 字符串为空
+                return " "
+            else:
+                return str(float(current_ratio)*100)[:9]+"%"
+        else:
+            return " "
+    else:
+        if dataFrame:
+            current_ratio = dataFrame['current_ratio'][1]  # 流动比率
+            if isinstance(current_ratio, np.float64):
+                current_ratio = str(current_ratio)
+            if not current_ratio.strip():  # 字符串为空
+                return " "
+            else:
+                return str(float(current_ratio)*100)[:9]+"%"
+        else:
+            return " "
