@@ -1030,6 +1030,34 @@ class solvencyAnalysisBox(Gtk.Box):
                                                      CR_one.center(center_other)
                                                      ])
 
+        QR_five = getQuickRatio(financialIndicator_five_age)
+        QR_four = getQuickRatio(financialIndicator_four_age)
+        QR_three = getQuickRatio(financialIndicator_three_age)
+        QR_two = getQuickRatio(financialIndicator_two_age)
+        QR_one = getQuickRatio(financialIndicator_one_age)
+
+        storeOfSolvencyAnalysis.append(["速动比率".center(center_one),
+                                                     QR_five.center(center_other),
+                                                     QR_four.center(center_other),
+                                                     QR_three.center(center_other),
+                                                     QR_two.center(center_other),
+                                                     QR_one.center(center_other)
+                                                     ])
+                                    
+        ALR_five = getAssetLiabilityRatio(financialIndicator_five_age)
+        ALR_four = getAssetLiabilityRatio(financialIndicator_four_age)
+        ALR_three = getAssetLiabilityRatio(financialIndicator_three_age)
+        ALR_two = getAssetLiabilityRatio(financialIndicator_two_age)
+        ALR_one = getAssetLiabilityRatio(financialIndicator_one_age)
+
+        storeOfSolvencyAnalysis.append(["资产负债率".center(center_one),
+                                                     ALR_five.center(center_other),
+                                                     ALR_four.center(center_other),
+                                                     ALR_three.center(center_other),
+                                                     ALR_two.center(center_other),
+                                                     ALR_one.center(center_other)
+                                                     ])
+
 
 class Content(Gtk.ScrolledWindow):
     # Initialize the page layout.
