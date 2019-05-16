@@ -498,3 +498,57 @@ def getCurrentRatio(dataFrame):
                 return str(float(current_ratio)*100)[:9]+"%"
         else:
             return " "
+
+
+def getQuickRatio(dataFrame):
+    if quick_ratio is None:
+        return " "
+    if isinstance(quick_ratio, pd.DataFrame):
+        if not quick_ratio.empty:
+            quick_ratio = dataFrame['quick_ratio'][1]  # 速动比率
+            if isinstance(quick_ratio, np.float64):
+                quick_ratio = str(quick_ratio)
+            if not quick_ratio.strip():  # 字符串为空
+                return " "
+            else:
+                return str(float(quick_ratio)*100)[:9]+"%"
+        else:
+            return " "
+    else:
+        if dataFrame:
+            quick_ratio = dataFrame['quick_ratio'][1]  # 速动比率
+            if isinstance(quick_ratio, np.float64):
+                quick_ratio = str(quick_ratio)
+            if not quick_ratio.strip():  # 字符串为空
+                return " "
+            else:
+                return str(float(quick_ratio)*100)[:9]+"%"
+        else:
+            return " "
+
+
+def getAssetLiabilityRatio(dataFrame):
+    if debt_to_assets is None:
+        return " "
+    if isinstance(debt_to_assets, pd.DataFrame):
+        if not debt_to_assets.empty:
+            debt_to_assets = dataFrame['debt_to_assets'][1]  # 速动比率
+            if isinstance(debt_to_assets, np.float64):
+                debt_to_assets = str(debt_to_assets)
+            if not debt_to_assets.strip():  # 字符串为空
+                return " "
+            else:
+                return str(float(debt_to_assets)*100)[:9]+"%"
+        else:
+            return " "
+    else:
+        if dataFrame:
+            debt_to_assets = dataFrame['debt_to_assets'][1]  # 速动比率
+            if isinstance(debt_to_assets, np.float64):
+                debt_to_assets = str(debt_to_assets)
+            if not debt_to_assets.strip():  # 字符串为空
+                return " "
+            else:
+                return str(float(debt_to_assets)*100)[:9]+"%"
+        else:
+            return " "
