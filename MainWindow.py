@@ -367,11 +367,11 @@ class assetStructureAnalysisBox(Gtk.Box):
 
         self.add(Gtk.Label("资本结构表", name="center"))
         self.add(assetStructureStatement)
-        ALR_five = getAssetLiabilityRatio(balanceSheet_five_age)
-        ALR_four = getAssetLiabilityRatio(balanceSheet_four_age)
-        ALR_three = getAssetLiabilityRatio(balanceSheet_three_age)
-        ALR_two = getAssetLiabilityRatio(balanceSheet_two_age)
-        ALR_one = getAssetLiabilityRatio(balanceSheet_one_age)
+        ALR_five = getAssetLiabilityRatioByBalanceSheet(balanceSheet_five_age)
+        ALR_four = getAssetLiabilityRatioByBalanceSheet(balanceSheet_four_age)
+        ALR_three = getAssetLiabilityRatioByBalanceSheet(balanceSheet_three_age)
+        ALR_two = getAssetLiabilityRatioByBalanceSheet(balanceSheet_two_age)
+        ALR_one = getAssetLiabilityRatioByBalanceSheet(balanceSheet_one_age)
 
         CLR_five = getCurrentLiabilitiesRate(balanceSheet_five_age)
         CLR_four = getCurrentLiabilitiesRate(balanceSheet_four_age)
@@ -1044,11 +1044,11 @@ class solvencyAnalysisBox(Gtk.Box):
                                                      QR_one.center(center_other)
                                                      ])
                                     
-        ALR_five = getAssetLiabilityRatio(financialIndicator_five_age)
-        ALR_four = getAssetLiabilityRatio(financialIndicator_four_age)
-        ALR_three = getAssetLiabilityRatio(financialIndicator_three_age)
-        ALR_two = getAssetLiabilityRatio(financialIndicator_two_age)
-        ALR_one = getAssetLiabilityRatio(financialIndicator_one_age)
+        ALR_five = getAssetLiabilityRatioByFinancialIndicator(financialIndicator_five_age)
+        ALR_four = getAssetLiabilityRatioByFinancialIndicator(financialIndicator_four_age)
+        ALR_three = getAssetLiabilityRatioByFinancialIndicator(financialIndicator_three_age)
+        ALR_two = getAssetLiabilityRatioByFinancialIndicator(financialIndicator_two_age)
+        ALR_one = getAssetLiabilityRatioByFinancialIndicator(financialIndicator_one_age)
 
         storeOfSolvencyAnalysis.append(["资产负债率".center(center_one),
                                                      ALR_five.center(center_other),

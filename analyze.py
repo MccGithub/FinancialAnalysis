@@ -205,7 +205,7 @@ def toNumber(s):
         convertedValue = convertELogStrToValue(up)
         return convertedValue
 
-def getAssetLiabilityRatio(dataFrame):
+def getAssetLiabilityRatioByBalanceSheet(dataFrame):
     # 资产负债率 = 负债总额/资产总额
     if dataFrame is None:
         return " "
@@ -527,12 +527,12 @@ def getQuickRatio(dataFrame):
             return " "
 
 
-def getAssetLiabilityRatio(dataFrame):
+def getAssetLiabilityRatioByFinancialIndicator(dataFrame):
     if dataFrame is None:
         return " "
     if isinstance(dataFrame, pd.DataFrame):
         if not dataFrame.empty:
-            debt_to_assets = dataFrame['debt_to_assets'][1]  # 速动比率
+            debt_to_assets = dataFrame['debt_to_assets'][1]  # 资产负债率
             if isinstance(debt_to_assets, np.float64):
                 debt_to_assets = str(debt_to_assets)
             if not debt_to_assets.strip():  # 字符串为空
@@ -543,7 +543,7 @@ def getAssetLiabilityRatio(dataFrame):
             return " "
     else:
         if dataFrame:
-            debt_to_assets = dataFrame['debt_to_assets'][1]  # 速动比率
+            debt_to_assets = dataFrame['debt_to_assets'][1]  # 资产负债率
             if isinstance(debt_to_assets, np.float64):
                 debt_to_assets = str(debt_to_assets)
             if not debt_to_assets.strip():  # 字符串为空
