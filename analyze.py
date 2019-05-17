@@ -501,10 +501,10 @@ def getCurrentRatio(dataFrame):
 
 
 def getQuickRatio(dataFrame):
-    if quick_ratio is None:
+    if dataFrame is None:
         return " "
-    if isinstance(quick_ratio, pd.DataFrame):
-        if not quick_ratio.empty:
+    if isinstance(dataFrame, pd.DataFrame):
+        if not dataFrame.empty:
             quick_ratio = dataFrame['quick_ratio'][1]  # 速动比率
             if isinstance(quick_ratio, np.float64):
                 quick_ratio = str(quick_ratio)
@@ -528,10 +528,10 @@ def getQuickRatio(dataFrame):
 
 
 def getAssetLiabilityRatio(dataFrame):
-    if debt_to_assets is None:
+    if dataFrame is None:
         return " "
-    if isinstance(debt_to_assets, pd.DataFrame):
-        if not debt_to_assets.empty:
+    if isinstance(dataFrame, pd.DataFrame):
+        if not dataFrame.empty:
             debt_to_assets = dataFrame['debt_to_assets'][1]  # 速动比率
             if isinstance(debt_to_assets, np.float64):
                 debt_to_assets = str(debt_to_assets)
@@ -550,5 +550,31 @@ def getAssetLiabilityRatio(dataFrame):
                 return " "
             else:
                 return str(float(debt_to_assets)*100)[:9]+"%"
+        else:
+            return " "
+
+def getNetCashOfBusinessActivities(dataFrame):
+    if dataFrame is None:
+        return " "
+    if isinstance(dataFrame, pd.DataFrame):
+        if not dataFrame.empty:
+            n_cashflow_act = dataFrame['n_cashflow_act'][1]  # 经营活动产生的现金流量净额
+            if isinstance(n_cashflow_act, np.float64):
+                n_cashflow_act = str(n_cashflow_act)
+            if not n_cashflow_act.strip():  # 字符串为空
+                return " "
+            else:
+                return n_cashflow_act
+        else:
+            return " "
+    else:
+        if dataFrame:
+            n_cashflow_act = dataFrame['n_cashflow_act'][1]  # 经营活动产生的现金流量净额
+            if isinstance(n_cashflow_act, np.float64):
+                n_cashflow_act = str(n_cashflow_act)
+            if not n_cashflow_act.strip():  # 字符串为空
+                return " "
+            else:
+                return n_cashflow_act
         else:
             return " "

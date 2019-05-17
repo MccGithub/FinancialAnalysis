@@ -958,7 +958,7 @@ class operationalCapabilityAnalysisBox(Gtk.Box):
             temporary[4]
         ]
         self.add(getLineChartImg(x, y, "总资产周转率趋势图", "总资产周转率", "年份", "周转率"))
-
+ 
 
 class solvencyAnalysisBox(Gtk.Box):
     """偿债能力分析的内容"""
@@ -1057,6 +1057,138 @@ class solvencyAnalysisBox(Gtk.Box):
                                                      ALR_two.center(center_other),
                                                      ALR_one.center(center_other)
                                                      ])
+
+        # 看情况添加房地产公司实际负债率   additional
+
+        self.add(Gtk.Label("注:图表中y轴为0表示数据缺失", name="remind"))
+        # 流动比率变化趋势图
+        x = [cur_year - 5, cur_year - 4, cur_year - 3, cur_year - 2, cur_year - 1]
+        temporary = []
+        tem = [CR_five, CR_four, CR_three, CR_two, CR_one]
+        for n in range(len(tem)):
+            if tem[n] is " " or tem[n] is "NaN":
+                temporary.append(0)
+            else:
+                temporary.append(toNumber(tem[n][:tem[n].find('%')]))
+
+        y = [
+            temporary[0],
+            temporary[1],
+            temporary[2],
+            temporary[3],
+            temporary[4]
+        ]
+        self.add(getLineChartImg(x, y, "流动比率变化趋势图", "流动比率", "年份", "比率"))
+
+        # 速动比率变化趋势图
+        x = [cur_year - 5, cur_year - 4, cur_year - 3, cur_year - 2, cur_year - 1]
+        temporary = []
+        tem = [ALR_five, ALR_four, ALR_three, ALR_two, ALR_one]
+        for n in range(len(tem)):
+            if tem[n] is " " or tem[n] is "NaN":
+                temporary.append(0)
+            else:
+                temporary.append(toNumber(tem[n][:tem[n].find('%')]))
+
+        y = [
+            temporary[0],
+            temporary[1],
+            temporary[2],
+            temporary[3],
+            temporary[4]
+        ]
+        self.add(getLineChartImg(x, y, "速动比率变化趋势图", "速动比率", "年份", "比率"))
+
+
+class cashFlowAnalysisBox(Gtk.Box):
+    """现金流量分析的内容"""
+    data = Data()
+
+    def __init__(self, ts_code):
+        super(Gtk.Box, self).__init__()
+        self.set_orientation(Gtk.Orientation.VERTICAL)
+        self.tsCode = ts_code
+
+        cur_year = getCurrentYear()
+        cashFlow_five_age = self.data.getCashFlowStatement(self.tsCode, cur_year - 5)
+        cashFlow_four_age = self.data.getCashFlowStatement(self.tsCode, cur_year - 4)
+        cashFlow_three_age = self.data.getCashFlowStatement(self.tsCode, cur_year - 3)
+        cashFlow_two_age = self.data.getCashFlowStatement(self.tsCode, cur_year - 2)
+        cashFlow_one_age = self.data.getCashFlowStatement(self.tsCode, cur_year - 1)
+
+        storeOfCashFlowAnalysis = Gtk.ListStore(str, str, str, str, str, str)
+        cashFlowAnalysisStatement = Gtk.TreeView(storeOfCashFlowAnalysis)
+
+        center_one = 38
+        center_other = 15
+        column_proj = Gtk.TreeViewColumn("指标".center(center_one))
+        column_five = Gtk.TreeViewColumn((str(cur_year - 5) + "年").center(center_other))
+        column_four = Gtk.TreeViewColumn((str(cur_year - 4) + "年").center(center_other))
+        column_three = Gtk.TreeViewColumn((str(cur_year - 3) + "年").center(center_other))
+        column_two = Gtk.TreeViewColumn((str(cur_year - 2) + "年").center(center_other))
+        column_one = Gtk.TreeViewColumn((str(cur_year - 1) + "年").center(center_other))
+
+        indicators = Gtk.CellRendererText()
+        five_ago = Gtk.CellRendererText()
+        four_ago = Gtk.CellRendererText()
+        three_ago = Gtk.CellRendererText()
+        two_ago = Gtk.CellRendererText()
+        one_ago = Gtk.CellRendererText()
+        column_proj.pack_start(indicators, True)
+        column_five.pack_start(five_ago, True)
+        column_four.pack_start(four_ago, True)
+        column_three.pack_start(three_ago, True)
+        column_two.pack_start(two_ago, True)
+        column_one.pack_start(one_ago, True)
+        column_proj.add_attribute(indicators, "text", 0)
+        column_five.add_attribute(five_ago, "text", 1)
+        column_four.add_attribute(four_ago, "text", 2)
+        column_three.add_attribute(three_ago, "text", 3)
+        column_two.add_attribute(two_ago, "text", 4)
+        column_one.add_attribute(one_ago, "text", 5)
+        cashFlowAnalysisStatement.append_column(column_proj)
+        cashFlowAnalysisStatement.append_column(column_five)
+        cashFlowAnalysisStatement.append_column(column_four)
+        cashFlowAnalysisStatement.append_column(column_three)
+        cashFlowAnalysisStatement.append_column(column_two)
+        cashFlowAnalysisStatement.append_column(column_one)
+
+        self.add(Gtk.Label("现金流量指标", name="center"))
+        self.add(cashFlowAnalysisStatement)
+
+        CR_five = getCurrentRatio(cashFlow_five_age)
+        CR_four = getCurrentRatio(cashFlow_four_age)
+        CR_three = getCurrentRatio(cashFlow_three_age)
+        CR_two = getCurrentRatio(cashFlow_two_age)
+        CR_one = getCurrentRatio(cashFlow_one_age)
+
+        storeOfCashFlowAnalysis.append(["流动比率".center(center_one),
+                                                     CR_five.center(center_other),
+                                                     CR_four.center(center_other),
+                                                     CR_three.center(center_other),
+                                                     CR_two.center(center_other),
+                                                     CR_one.center(center_other)
+                                                     ])
+
+        self.add(Gtk.Label("注:图表中y轴为0表示数据缺失", name="remind"))
+        # 存货周转率趋势图
+        x = [cur_year - 5, cur_year - 4, cur_year - 3, cur_year - 2, cur_year - 1]
+        temporary = []
+        tem = [IT_five, IT_four, IT_three, IT_two, IT_one]
+        for n in range(len(tem)):
+            if tem[n] is " " or tem[n] is "NaN":
+                temporary.append(0)
+            else:
+                temporary.append(toNumber(tem[n][:tem[n].find('%')]))
+
+        y = [
+            temporary[0],
+            temporary[1],
+            temporary[2],
+            temporary[3],
+            temporary[4]
+        ]
+        self.add(getLineChartImg(x, y, "存货周转率趋势图", "存货周转率", "年份", "周转率"))
 
 
 class Content(Gtk.ScrolledWindow):
@@ -1235,6 +1367,13 @@ class Content(Gtk.ScrolledWindow):
         solvencyAnalysisRow = Gtk.ListBoxRow()
         solvencyAnalysisRow.add(solvencyAnalysisExp)
         self.contentList.insert(solvencyAnalysisRow, -1)
+
+        cashFlowAnalysisExp = Gtk.Expander.new("Cash flow analysis")  # 现金流量分析
+        cashFlowAnalysisExp.set_expanded(True)
+        cashFlowAnalysisExp.add(cashFlowAnalysisBox(ts_code))
+        cashFlowAnalysisRow = Gtk.ListBoxRow()
+        cashFlowAnalysisRow.add(cashFlowAnalysisExp)
+        self.contentList.insert(cashFlowAnalysisRow, -1)
 
 
         self.add(self.contentList)
