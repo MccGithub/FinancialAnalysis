@@ -1156,39 +1156,81 @@ class cashFlowAnalysisBox(Gtk.Box):
         self.add(Gtk.Label("现金流量指标", name="center"))
         self.add(cashFlowAnalysisStatement)
 
-        CR_five = getCurrentRatio(cashFlow_five_age)
-        CR_four = getCurrentRatio(cashFlow_four_age)
-        CR_three = getCurrentRatio(cashFlow_three_age)
-        CR_two = getCurrentRatio(cashFlow_two_age)
-        CR_one = getCurrentRatio(cashFlow_one_age)
+        CBA_five = getNetCashOfBusiness(cashFlow_five_age)
+        CBA_four = getNetCashOfBusiness(cashFlow_four_age)
+        CBA_three = getNetCashOfBusiness(cashFlow_three_age)
+        CBA_two = getNetCashOfBusiness(cashFlow_two_age)
+        CBA_one = getNetCashOfBusiness(cashFlow_one_age)
 
-        storeOfCashFlowAnalysis.append(["流动比率".center(center_one),
-                                                     CR_five.center(center_other),
-                                                     CR_four.center(center_other),
-                                                     CR_three.center(center_other),
-                                                     CR_two.center(center_other),
-                                                     CR_one.center(center_other)
+        storeOfCashFlowAnalysis.append(["经营活动产生的现金净额".center(center_one),
+                                                     CBA_five.center(center_other),
+                                                     CBA_four.center(center_other),
+                                                     CBA_three.center(center_other),
+                                                     CBA_two.center(center_other),
+                                                     CBA_one.center(center_other)
                                                      ])
 
-        self.add(Gtk.Label("注:图表中y轴为0表示数据缺失", name="remind"))
-        # 存货周转率趋势图
-        x = [cur_year - 5, cur_year - 4, cur_year - 3, cur_year - 2, cur_year - 1]
-        temporary = []
-        tem = [IT_five, IT_four, IT_three, IT_two, IT_one]
-        for n in range(len(tem)):
-            if tem[n] is " " or tem[n] is "NaN":
-                temporary.append(0)
-            else:
-                temporary.append(toNumber(tem[n][:tem[n].find('%')]))
+        CIA_five = getNetCashOfInvestment(cashFlow_five_age)
+        CIA_four = getNetCashOfInvestment(cashFlow_four_age)
+        CIA_three = getNetCashOfInvestment(cashFlow_three_age)
+        CIA_two = getNetCashOfInvestment(cashFlow_two_age)
+        CIA_one = getNetCashOfInvestment(cashFlow_one_age)
 
-        y = [
-            temporary[0],
-            temporary[1],
-            temporary[2],
-            temporary[3],
-            temporary[4]
-        ]
-        self.add(getLineChartImg(x, y, "存货周转率趋势图", "存货周转率", "年份", "周转率"))
+        storeOfCashFlowAnalysis.append(["投资活动产生的现金净额".center(center_one),
+                                                     CIA_five.center(center_other),
+                                                     CIA_four.center(center_other),
+                                                     CIA_three.center(center_other),
+                                                     CIA_two.center(center_other),
+                                                     CIA_one.center(center_other)
+                                                     ])
+                                                     
+        CFA_five = getNetCashOfFinancing(cashFlow_five_age)
+        CFA_four = getNetCashOfFinancing(cashFlow_four_age)
+        CFA_three = getNetCashOfFinancing(cashFlow_three_age)
+        CFA_two = getNetCashOfFinancing(cashFlow_two_age)
+        CFA_one = getNetCashOfFinancing(cashFlow_one_age)
+
+        storeOfCashFlowAnalysis.append(["投资活动产生的现金净额".center(center_one),
+                                                     CFA_five.center(center_other),
+                                                     CFA_four.center(center_other),
+                                                     CFA_three.center(center_other),
+                                                     CFA_two.center(center_other),
+                                                     CFA_one.center(center_other)
+                                                     ])
+
+        NICE_five = getNetIncreaseInCashAndCashEquivalents(cashFlow_five_age)
+        NICE_four = getNetIncreaseInCashAndCashEquivalents(cashFlow_four_age)
+        NICE_three = getNetIncreaseInCashAndCashEquivalents(cashFlow_three_age)
+        NICE_two = getNetIncreaseInCashAndCashEquivalents(cashFlow_two_age)
+        NICE_one = getNetIncreaseInCashAndCashEquivalents(cashFlow_one_age)
+
+        storeOfCashFlowAnalysis.append(["投资活动产生的现金净额".center(center_one),
+                                                     NICE_five.center(center_other),
+                                                     NICE_four.center(center_other),
+                                                     NICE_three.center(center_other),
+                                                     NICE_two.center(center_other),
+                                                     NICE_one.center(center_other)
+                                                     ])
+
+        # self.add(Gtk.Label("注:图表中y轴为0表示数据缺失", name="remind"))
+        # # 经营活动产生的现金净额变化图
+        # x = [cur_year - 5, cur_year - 4, cur_year - 3, cur_year - 2, cur_year - 1]
+        # temporary = []
+        # tem = [CBA_five, CBA_four, CBA_three, CBA_two, CBA_one]
+        # for n in range(len(tem)):
+        #     if tem[n] is " " or tem[n] is "NaN":
+        #         temporary.append(0)
+        #     else:
+        #         temporary.append(toNumber(tem[n][:tem[n].find('%')]))
+
+        # y = [
+        #     temporary[0],
+        #     temporary[1],
+        #     temporary[2],
+        #     temporary[3],
+        #     temporary[4]
+        # ]
+        # self.add(getLineChartImg(x, y, "经营活动产生的现金净额变化图", "现金净额", "年份", "净额"))
 
 
 class Content(Gtk.ScrolledWindow):

@@ -553,7 +553,7 @@ def getAssetLiabilityRatio(dataFrame):
         else:
             return " "
 
-def getNetCashOfBusinessActivities(dataFrame):
+def getNetCashOfBusiness(dataFrame):
     if dataFrame is None:
         return " "
     if isinstance(dataFrame, pd.DataFrame):
@@ -576,5 +576,86 @@ def getNetCashOfBusinessActivities(dataFrame):
                 return " "
             else:
                 return n_cashflow_act
+        else:
+            return " "
+
+
+def getNetCashOfInvestment(dataFrame):
+    if dataFrame is None:
+        return " "
+    if isinstance(dataFrame, pd.DataFrame):
+        if not dataFrame.empty:
+            n_cashflow_inv_act = dataFrame['n_cashflow_inv_act'][1]  # 投资活动产生的现金流量净额
+            if isinstance(n_cashflow_inv_act, np.float64):
+                n_cashflow_inv_act = str(n_cashflow_inv_act)
+            if not n_cashflow_inv_act.strip():  # 字符串为空
+                return " "
+            else:
+                return n_cashflow_inv_act
+        else:
+            return " "
+    else:
+        if dataFrame:
+            n_cashflow_inv_act = dataFrame['n_cashflow_inv_act'][1]  # 投资活动产生的现金流量净额
+            if isinstance(n_cashflow_inv_act, np.float64):
+                n_cashflow_inv_act = str(n_cashflow_inv_act)
+            if not n_cashflow_inv_act.strip():  # 字符串为空
+                return " "
+            else:
+                return n_cashflow_inv_act
+        else:
+            return " "
+
+    
+def getNetCashOfFinancing(dataFrame):
+    if dataFrame is None:
+        return " "
+    if isinstance(dataFrame, pd.DataFrame):
+        if not dataFrame.empty:
+            n_cash_flows_fnc_act = dataFrame['n_cash_flows_fnc_act'][1]  # 筹资活动产生的现金流量净额
+            if isinstance(n_cash_flows_fnc_act, np.float64):
+                n_cash_flows_fnc_act = str(n_cash_flows_fnc_act)
+            if not n_cash_flows_fnc_act.strip():  # 字符串为空
+                return " "
+            else:
+                return n_cash_flows_fnc_act
+        else:
+            return " "
+    else:
+        if dataFrame:
+            n_cash_flows_fnc_act = dataFrame['n_cash_flows_fnc_act'][1]  # 筹资活动产生的现金流量净额
+            if isinstance(n_cash_flows_fnc_act, np.float64):
+                n_cash_flows_fnc_act = str(n_cash_flows_fnc_act)
+            if not n_cash_flows_fnc_act.strip():  # 字符串为空
+                return " "
+            else:
+                return n_cash_flows_fnc_act
+        else:
+            return " "
+
+
+def getNetIncreaseInCashAndCashEquivalents(dataFrame):
+    if dataFrame is None:
+        return " "
+    if isinstance(dataFrame, pd.DataFrame):
+        if not dataFrame.empty:
+            n_incr_cash_cash_equ = dataFrame['n_incr_cash_cash_equ'][1]  # 现金及现金等价物净增加额
+            if isinstance(n_incr_cash_cash_equ, np.float64):
+                n_incr_cash_cash_equ = str(n_incr_cash_cash_equ)
+            if not n_incr_cash_cash_equ.strip():  # 字符串为空
+                return " "
+            else:
+                return n_incr_cash_cash_equ
+        else:
+            return " "
+    else:
+        if dataFrame:
+            n_incr_cash_cash_equ = dataFrame['n_incr_cash_cash_equ'][1]  # 现金及现金等价物净增加额
+            if isinstance(n_incr_cash_cash_equ, np.float64):
+                n_incr_cash_cash_equ = str(n_incr_cash_cash_equ)
+            if not n_incr_cash_cash_equ.strip():  # 字符串为空
+                return " "
+            else:
+                return n_incr_cash_cash_equ
         else:
             return " "
