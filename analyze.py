@@ -12,6 +12,7 @@ from matplotlib import pyplot as plt
 from matplotlib import ticker
 import matplotlib.font_manager as fm
 mpl.rcParams['font.sans-serif'] = ['WenQuanYi Zen Hei Mono']  # Solve the problem of Chinese messy code.
+plt.rcParams['axes.unicode_minus'] = False   # 解决坐标轴负号乱码问题
 
 def filterIndustry(dataFrame, str):
     return dataFrame[dataFrame.industry == str]
