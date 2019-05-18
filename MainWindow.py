@@ -1254,7 +1254,7 @@ class cashFlowAnalysisBox(Gtk.Box):
         # 筹资活动产生的现金净额变化图
         x = [cur_year - 5, cur_year - 4, cur_year - 3, cur_year - 2, cur_year - 1]
         temporary = []
-        tem = [CFA_five, CFA_four, CFA_three, CFA_two, CfA_one]
+        tem = [CFA_five, CFA_four, CFA_three, CFA_two, CFA_one]
         for n in range(len(tem)):
             if tem[n] is " " or tem[n] is "NaN":
                 temporary.append(0)
