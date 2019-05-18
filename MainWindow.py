@@ -1190,7 +1190,7 @@ class cashFlowAnalysisBox(Gtk.Box):
         CFA_two = getNetCashOfFinancing(cashFlow_two_age)
         CFA_one = getNetCashOfFinancing(cashFlow_one_age)
 
-        storeOfCashFlowAnalysis.append(["投资活动产生的现金净额".center(center_one),
+        storeOfCashFlowAnalysis.append(["筹资活动产生的现金净额".center(center_one),
                                                      CFA_five.center(center_other),
                                                      CFA_four.center(center_other),
                                                      CFA_three.center(center_other),
@@ -1204,7 +1204,7 @@ class cashFlowAnalysisBox(Gtk.Box):
         NICE_two = getNetIncreaseInCashAndCashEquivalents(cashFlow_two_age)
         NICE_one = getNetIncreaseInCashAndCashEquivalents(cashFlow_one_age)
 
-        storeOfCashFlowAnalysis.append(["投资活动产生的现金净额".center(center_one),
+        storeOfCashFlowAnalysis.append(["现金及现金等价物的净增加额".center(center_one),
                                                      NICE_five.center(center_other),
                                                      NICE_four.center(center_other),
                                                      NICE_three.center(center_other),
@@ -1212,25 +1212,82 @@ class cashFlowAnalysisBox(Gtk.Box):
                                                      NICE_one.center(center_other)
                                                      ])
 
-        # self.add(Gtk.Label("注:图表中y轴为0表示数据缺失", name="remind"))
-        # # 经营活动产生的现金净额变化图
-        # x = [cur_year - 5, cur_year - 4, cur_year - 3, cur_year - 2, cur_year - 1]
-        # temporary = []
-        # tem = [CBA_five, CBA_four, CBA_three, CBA_two, CBA_one]
-        # for n in range(len(tem)):
-        #     if tem[n] is " " or tem[n] is "NaN":
-        #         temporary.append(0)
-        #     else:
-        #         temporary.append(toNumber(tem[n][:tem[n].find('%')]))
+        self.add(Gtk.Label("注:图表中y轴为0表示数据缺失", name="remind"))
+        # 经营活动产生的现金净额变化图
+        x = [cur_year - 5, cur_year - 4, cur_year - 3, cur_year - 2, cur_year - 1]
+        temporary = []
+        tem = [CBA_five, CBA_four, CBA_three, CBA_two, CBA_one]
+        for n in range(len(tem)):
+            if tem[n] is " " or tem[n] is "NaN":
+                temporary.append(0)
+            else:
+                temporary.append(toNumber(tem[n][:tem[n].find('%')]))
 
-        # y = [
-        #     temporary[0],
-        #     temporary[1],
-        #     temporary[2],
-        #     temporary[3],
-        #     temporary[4]
-        # ]
-        # self.add(getLineChartImg(x, y, "经营活动产生的现金净额变化图", "现金净额", "年份", "净额"))
+        y = [
+            temporary[0],
+            temporary[1],
+            temporary[2],
+            temporary[3],
+            temporary[4]
+        ]
+        self.add(getLineChartImg(x, y, "经营活动产生的现金净额变化图", "现金净额", "年份", "净额"))
+
+        # 投资活动产生的现金净额变化图
+        x = [cur_year - 5, cur_year - 4, cur_year - 3, cur_year - 2, cur_year - 1]
+        temporary = []
+        tem = [CIA_five, CIA_four, CIA_three, CiA_two, CIA_one]
+        for n in range(len(tem)):
+            if tem[n] is " " or tem[n] is "NaN":
+                temporary.append(0)
+            else:
+                temporary.append(toNumber(tem[n][:tem[n].find('%')]))
+
+        y = [
+            temporary[0],
+            temporary[1],
+            temporary[2],
+            temporary[3],
+            temporary[4]
+        ]
+        self.add(getLineChartImg(x, y, "投资活动产生的现金净额变化图", "现金净额", "年份", "净额"))
+
+        # 筹资活动产生的现金净额变化图
+        x = [cur_year - 5, cur_year - 4, cur_year - 3, cur_year - 2, cur_year - 1]
+        temporary = []
+        tem = [CFA_five, CFA_four, CFA_three, CFA_two, CfA_one]
+        for n in range(len(tem)):
+            if tem[n] is " " or tem[n] is "NaN":
+                temporary.append(0)
+            else:
+                temporary.append(toNumber(tem[n][:tem[n].find('%')]))
+
+        y = [
+            temporary[0],
+            temporary[1],
+            temporary[2],
+            temporary[3],
+            temporary[4]
+        ]
+        self.add(getLineChartImg(x, y, "筹资活动产生的现金净额变化图", "现金净额", "年份", "净额"))
+
+        # 现金及现金等价物的净增加额变化图
+        x = [cur_year - 5, cur_year - 4, cur_year - 3, cur_year - 2, cur_year - 1]
+        temporary = []
+        tem = [NICE_five, NICE_four, NICE_three, NICE_two, NICE_one]
+        for n in range(len(tem)):
+            if tem[n] is " " or tem[n] is "NaN":
+                temporary.append(0)
+            else:
+                temporary.append(toNumber(tem[n][:tem[n].find('%')]))
+
+        y = [
+            temporary[0],
+            temporary[1],
+            temporary[2],
+            temporary[3],
+            temporary[4]
+        ]
+        self.add(getLineChartImg(x, y, "现金及现金等价物的净增加额变化图", "净增加额", "年份", "净增加额"))
 
 
 class Content(Gtk.ScrolledWindow):
