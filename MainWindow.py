@@ -1637,8 +1637,24 @@ class UI_Window(Gtk.Window):
     def whenOpenProgram(self):
         self.search.on_refresh_clicked(self.search)
         list = Gtk.ListBoxRow()
-        welcome_label = Gtk.Label("这是欢迎界面")
+        welcome_label = Gtk.Label("欢迎使用本财务分析软件\n你可以通过此软件更加快速的分析出上市公司的财务状况\n本软件的财务分析采用哈佛分析框架中的财务分析方法\n\n\n\n")
+        # welcome_label = Gtk.Image.new_from_file("Icons/refresh.png")
+        welcome_label.set_name("p")
         list.add(welcome_label)
+        screen = Gdk.Screen.get_default()
+        provider = Gtk.CssProvider()
+        style_context = Gtk.StyleContext()
+        style_context.add_provider_for_screen(
+            screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+        css = b"""
+        #p {
+            padding-top:5em;
+            font-size:3em;
+            color:blue;
+        }
+        """
+        provider.load_from_data(css)
         self.display.addCard("Welcome", list)
         return False
 
