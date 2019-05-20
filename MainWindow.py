@@ -147,13 +147,14 @@ class TabItem(Gtk.Box):
                         (str,))
     }
 
-    def __init__(self, ts_code):
+    def __init__(self, ts_code=None):
         super(Gtk.Box, self).__init__()
         self.data = Data()
         self.name = Gtk.Button()
         self.close = Gtk.Button()
         self.closeImg = Gtk.Image.new_from_file("Icons/close.png")
-        self.name.set_label(self.data.getCompanyFullNameByTsCode(ts_code))
+        if ts_code is not None:
+            self.name.set_label(self.data.getCompanyFullNameByTsCode(ts_code))
         self.name.set_focus_on_click(False)
         self.close.set_image(self.closeImg)
         self.close.set_always_show_image(True)
@@ -179,6 +180,9 @@ class TabItem(Gtk.Box):
 
     def getFullName(self):
         return self.name.get_label()
+
+    def setName(self, s):
+        self.name.set_label(s)
 
 class StatementInformationBox(Gtk.Box):
     data = Data()
@@ -1292,8 +1296,7 @@ class cashFlowAnalysisBox(Gtk.Box):
 
 class Content(Gtk.ScrolledWindow):
     # Initialize the page layout.
-    def __init__(self, ts_code):
-        # Initialize the box and set it's property.
+    def __init__(self, ts_code=None):
         super(Gtk.ScrolledWindow, self).__init__()
         self.contentList = Gtk.ListBox()
         self.data = Data()
@@ -1328,153 +1331,157 @@ class Content(Gtk.ScrolledWindow):
         }
         """
         provider.load_from_data(css)
+        if ts_code is not None:
+            # Initialize the box and set it's property.
+            self.fullName = self.data.getCompanyFullNameByTsCode(ts_code)
+            self.companyInformation = self.data.getCompanyInformationByTsCode(ts_code)
 
-        self.fullName = self.data.getCompanyFullNameByTsCode(ts_code)
-        self.companyInformation = self.data.getCompanyInformationByTsCode(ts_code)
+            # The following is the specific company information.
+            # The full name of the company in the first line.
+            self.fullnameLab = Gtk.Label(self.fullName)
+            self.fullnameLab.set_selectable(True)
+            fullNameRow = Gtk.ListBoxRow()
+            fullNameRow.add(self.fullnameLab)
+            self.contentList.insert(fullNameRow, -1)
 
-        # The following is the specific company information.
-        # The full name of the company in the first line.
-        self.fullnameLab = Gtk.Label(self.fullName)
-        self.fullnameLab.set_selectable(True)
-        fullNameRow = Gtk.ListBoxRow()
-        fullNameRow.add(self.fullnameLab)
-        self.contentList.insert(fullNameRow, -1)
+            # Company details.
+            self.companyInformationGrid = Gtk.Grid()
+            self.companyInformationGrid.set_column_spacing(10)
+            self.companyInformationGrid.add(Gtk.Label("法定代表人:", xalign=0, name="bg_odd"))
+            # modify_bg(Gtk.StateFlags(0), Gdk.Color(49601, 53970, 61680))
+            self.companyInformationGrid.attach(Gtk.Label(cutHead(self.companyInformation["legalRepresentative"].to_string()), xalign=0, selectable=True, name="bg_odd"), 1, 0, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label("总经理:", xalign=0, name="bg_odd"), 2, 0, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label(cutHead(self.companyInformation["generalManager"].to_string()),
+                                                        xalign=0, selectable=True, name="bg_odd"), 3, 0, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label("董事长秘书:", xalign=0, name="bg_odd"), 4, 0, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label(cutHead(self.companyInformation["chairmanSecretary"].to_string()),
+                                                        xalign=0, selectable=True, name="bg_odd"), 5, 0, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label("注册资本:", xalign=0, name="bg_even"), 0, 1, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label(cutHead(self.companyInformation["registeredCapital"].to_string())+'万',
+                                                        xalign=0, selectable=True, name="bg_even"), 1, 1, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label("注册日期:", xalign=0, name="bg_even"), 2, 1, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label(cutHead(self.companyInformation["registrationDate"].to_string()),
+                                                        xalign=0, selectable=True, name="bg_even"), 3, 1, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label("股票代码:", xalign=0, name="bg_even"), 4, 1, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label(cutHead(self.companyInformation["stockCode"].to_string()),
+                                                        xalign=0, selectable=True, name="bg_even"), 5, 1, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label("所在省份:", xalign=0, name="bg_odd"), 0, 2, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label(cutHead(self.companyInformation["province"].to_string()),
+                                                        xalign=0, selectable=True, name="bg_odd"), 1, 2, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label("所在城市:", xalign=0, name="bg_odd"), 2, 2, 1, 1)
+            city = cutHead(self.companyInformation["city"].to_string())
+            self.companyInformationGrid.attach(Gtk.Label(city, xalign=0, selectable=True, name="bg_odd"), 3, 2, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label("地址:", xalign=0, name="bg_odd"), 4, 2, 1, 1)  # *要设置最大宽度, 超出的点击...显示全部
+            address = re.sub(',', '\n', cutHead(self.companyInformation["office"].to_string()))
+            self.companyInformationGrid.attach(Gtk.Label(address[address.find(city[-1:])+1:], xalign=0, selectable=True, name="bg_odd"), 5, 2, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label("邮箱:", xalign=0, name="bg_even"), 0, 3, 1, 1)   # *要设置最大宽度, 超出的点击...显示全部
+            self.companyInformationGrid.attach(Gtk.Label(re.sub(';', '\n', cutHead(self.companyInformation["email"].to_string()), 5),
+                                                        xalign=0, selectable=True, name="bg_even"), 1, 3, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label("公司主页:", xalign=0, name="bg_even"), 2, 3, 1, 1)
+            mailPage = Gtk.Label(xalign=0, selectable=True, name="bg_even")
+            mailPageUrl = cutHead(self.companyInformation["website"].to_string())
+            mailPage.set_markup("<a href=\"" + mailPageUrl + "\" title=\"official website\">" + mailPageUrl + "</a>")
+            self.companyInformationGrid.attach(mailPage, 3, 3, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label("员工人数:", xalign=0, name="bg_even"), 4, 3, 1, 1)
+            self.companyInformationGrid.attach(Gtk.Label(cutHead(self.companyInformation["numberOfEmployees"].to_string()),
+                                                        xalign=0, selectable=True, name="bg_even"), 5, 3, 1, 1)
 
-        # Company details.
-        self.companyInformationGrid = Gtk.Grid()
-        self.companyInformationGrid.set_column_spacing(10)
-        self.companyInformationGrid.add(Gtk.Label("法定代表人:", xalign=0, name="bg_odd"))
-        # modify_bg(Gtk.StateFlags(0), Gdk.Color(49601, 53970, 61680))
-        self.companyInformationGrid.attach(Gtk.Label(cutHead(self.companyInformation["legalRepresentative"].to_string()), xalign=0, selectable=True, name="bg_odd"), 1, 0, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label("总经理:", xalign=0, name="bg_odd"), 2, 0, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label(cutHead(self.companyInformation["generalManager"].to_string()),
-                                                     xalign=0, selectable=True, name="bg_odd"), 3, 0, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label("董事长秘书:", xalign=0, name="bg_odd"), 4, 0, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label(cutHead(self.companyInformation["chairmanSecretary"].to_string()),
-                                                     xalign=0, selectable=True, name="bg_odd"), 5, 0, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label("注册资本:", xalign=0, name="bg_even"), 0, 1, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label(cutHead(self.companyInformation["registeredCapital"].to_string())+'万',
-                                                     xalign=0, selectable=True, name="bg_even"), 1, 1, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label("注册日期:", xalign=0, name="bg_even"), 2, 1, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label(cutHead(self.companyInformation["registrationDate"].to_string()),
-                                                     xalign=0, selectable=True, name="bg_even"), 3, 1, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label("股票代码:", xalign=0, name="bg_even"), 4, 1, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label(cutHead(self.companyInformation["stockCode"].to_string()),
-                                                     xalign=0, selectable=True, name="bg_even"), 5, 1, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label("所在省份:", xalign=0, name="bg_odd"), 0, 2, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label(cutHead(self.companyInformation["province"].to_string()),
-                                                     xalign=0, selectable=True, name="bg_odd"), 1, 2, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label("所在城市:", xalign=0, name="bg_odd"), 2, 2, 1, 1)
-        city = cutHead(self.companyInformation["city"].to_string())
-        self.companyInformationGrid.attach(Gtk.Label(city, xalign=0, selectable=True, name="bg_odd"), 3, 2, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label("地址:", xalign=0, name="bg_odd"), 4, 2, 1, 1)  # *要设置最大宽度, 超出的点击...显示全部
-        address = re.sub(',', '\n', cutHead(self.companyInformation["office"].to_string()))
-        self.companyInformationGrid.attach(Gtk.Label(address[address.find(city[-1:])+1:], xalign=0, selectable=True, name="bg_odd"), 5, 2, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label("邮箱:", xalign=0, name="bg_even"), 0, 3, 1, 1)   # *要设置最大宽度, 超出的点击...显示全部
-        self.companyInformationGrid.attach(Gtk.Label(re.sub(';', '\n', cutHead(self.companyInformation["email"].to_string()), 5),
-                                                     xalign=0, selectable=True, name="bg_even"), 1, 3, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label("公司主页:", xalign=0, name="bg_even"), 2, 3, 1, 1)
-        mailPage = Gtk.Label(xalign=0, selectable=True, name="bg_even")
-        mailPageUrl = cutHead(self.companyInformation["website"].to_string())
-        mailPage.set_markup("<a href=\"" + mailPageUrl + "\" title=\"official website\">" + mailPageUrl + "</a>")
-        self.companyInformationGrid.attach(mailPage, 3, 3, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label("员工人数:", xalign=0, name="bg_even"), 4, 3, 1, 1)
-        self.companyInformationGrid.attach(Gtk.Label(cutHead(self.companyInformation["numberOfEmployees"].to_string()),
-                                                     xalign=0, selectable=True, name="bg_even"), 5, 3, 1, 1)
+            # *这里要隐藏多余的字并且可点击显示
+            #How to set max width of GtkLabel properly?
+            #https://stackoverflow.com/questions/27462926/how-to-set-max-width-of-gtklabel-properly
 
-        # *这里要隐藏多余的字并且可点击显示
-        #How to set max width of GtkLabel properly?
-        #https://stackoverflow.com/questions/27462926/how-to-set-max-width-of-gtklabel-properly
+            companyIntroduction = Gtk.Label(cutHead(self.companyInformation["companyIntroduction"].to_string()))
+            companyIntroduction.set_xalign(0)
+            companyIntroduction.set_selectable(True)
+            companyIntroduction.set_line_wrap(True)
+            companyIntroduction.set_width_chars(40)
+            scopeOfBusiness = Gtk.Label(cutHead(self.companyInformation["scopeOfBusiness"].to_string()))
+            scopeOfBusiness.set_xalign(0)
+            scopeOfBusiness.set_selectable(True)
+            scopeOfBusiness.set_line_wrap(True)
+            mainBusinessAndProducts = Gtk.Label(cutHead(self.companyInformation["mainBusinessAndProducts"].to_string()))
+            mainBusinessAndProducts.set_xalign(0)
+            mainBusinessAndProducts.set_selectable(True)
+            mainBusinessAndProducts.set_line_wrap(True)
+            companyIntroductionLbEvtBox = Gtk.EventBox()
+            companyIntroductionLbEvtBox.add(Gtk.Label("公司介绍:", xalign=0))
+            companyIntroductionLbEvtBox.modify_bg(Gtk.StateFlags(0), Gdk.Color(49601, 53970, 61680))
+            companyIntroductionEvtBox = Gtk.EventBox()
+            companyIntroductionEvtBox.add(companyIntroduction)
+            companyIntroductionEvtBox.modify_bg(Gtk.StateFlags(0), Gdk.Color(49601, 53970, 61680))
+            self.companyInformationGrid.attach(companyIntroductionLbEvtBox, 0, 4, 1, 1)  #(1, 4, 5, 1)
+            self.companyInformationGrid.attach(companyIntroductionEvtBox, 1, 4, 5, 1)
+            self.companyInformationGrid.attach(Gtk.Label("经营范围:", xalign=0), 0, 5, 1, 1)  #(1, 5, 5, 1)
+            self.companyInformationGrid.attach(scopeOfBusiness, 1, 5, 5, 1)
+            mainBusinessAndProductsLbEvtBox = Gtk.EventBox()
+            mainBusinessAndProductsLbEvtBox.add(Gtk.Label("主营业务:", xalign=0))
+            mainBusinessAndProductsLbEvtBox.modify_bg(Gtk.StateFlags(0), Gdk.Color(49601, 53970, 61680))
+            mainBusinessAndProductsEvtBox = Gtk.EventBox()
+            mainBusinessAndProductsEvtBox.add(mainBusinessAndProducts)
+            mainBusinessAndProductsEvtBox.modify_bg(Gtk.StateFlags(0), Gdk.Color(49601, 53970, 61680))
+            self.companyInformationGrid.attach(mainBusinessAndProductsLbEvtBox, 0, 6, 1, 1)  #(1, 6, 5, 1)
+            self.companyInformationGrid.attach(mainBusinessAndProductsEvtBox, 1, 6, 5, 1)
 
-        companyIntroduction = Gtk.Label(cutHead(self.companyInformation["companyIntroduction"].to_string()))
-        companyIntroduction.set_xalign(0)
-        companyIntroduction.set_selectable(True)
-        companyIntroduction.set_line_wrap(True)
-        companyIntroduction.set_width_chars(40)
-        scopeOfBusiness = Gtk.Label(cutHead(self.companyInformation["scopeOfBusiness"].to_string()))
-        scopeOfBusiness.set_xalign(0)
-        scopeOfBusiness.set_selectable(True)
-        scopeOfBusiness.set_line_wrap(True)
-        mainBusinessAndProducts = Gtk.Label(cutHead(self.companyInformation["mainBusinessAndProducts"].to_string()))
-        mainBusinessAndProducts.set_xalign(0)
-        mainBusinessAndProducts.set_selectable(True)
-        mainBusinessAndProducts.set_line_wrap(True)
-        companyIntroductionLbEvtBox = Gtk.EventBox()
-        companyIntroductionLbEvtBox.add(Gtk.Label("公司介绍:", xalign=0))
-        companyIntroductionLbEvtBox.modify_bg(Gtk.StateFlags(0), Gdk.Color(49601, 53970, 61680))
-        companyIntroductionEvtBox = Gtk.EventBox()
-        companyIntroductionEvtBox.add(companyIntroduction)
-        companyIntroductionEvtBox.modify_bg(Gtk.StateFlags(0), Gdk.Color(49601, 53970, 61680))
-        self.companyInformationGrid.attach(companyIntroductionLbEvtBox, 0, 4, 1, 1)  #(1, 4, 5, 1)
-        self.companyInformationGrid.attach(companyIntroductionEvtBox, 1, 4, 5, 1)
-        self.companyInformationGrid.attach(Gtk.Label("经营范围:", xalign=0), 0, 5, 1, 1)  #(1, 5, 5, 1)
-        self.companyInformationGrid.attach(scopeOfBusiness, 1, 5, 5, 1)
-        mainBusinessAndProductsLbEvtBox = Gtk.EventBox()
-        mainBusinessAndProductsLbEvtBox.add(Gtk.Label("主营业务:", xalign=0))
-        mainBusinessAndProductsLbEvtBox.modify_bg(Gtk.StateFlags(0), Gdk.Color(49601, 53970, 61680))
-        mainBusinessAndProductsEvtBox = Gtk.EventBox()
-        mainBusinessAndProductsEvtBox.add(mainBusinessAndProducts)
-        mainBusinessAndProductsEvtBox.modify_bg(Gtk.StateFlags(0), Gdk.Color(49601, 53970, 61680))
-        self.companyInformationGrid.attach(mainBusinessAndProductsLbEvtBox, 0, 6, 1, 1)  #(1, 6, 5, 1)
-        self.companyInformationGrid.attach(mainBusinessAndProductsEvtBox, 1, 6, 5, 1)
+            companyInformationRow = Gtk.ListBoxRow()
+            companyInformationRow.add(self.companyInformationGrid)
+            self.contentList.insert(companyInformationRow, -1)
 
-        companyInformationRow = Gtk.ListBoxRow()
-        companyInformationRow.add(self.companyInformationGrid)
-        self.contentList.insert(companyInformationRow, -1)
+            statementInformation = Gtk.Expander.new("statement information")    # 财务数据
+            statementInformation.set_expanded(True)
+            statementInformationBox = StatementInformationBox(ts_code)
+            statementInformationBox.set_name("indentation_2em")
 
-        statementInformation = Gtk.Expander.new("statement information")    # 财务数据
-        statementInformation.set_expanded(True)
-        statementInformationBox = StatementInformationBox(ts_code)
-        statementInformationBox.set_name("indentation_2em")
+            statementInformation.add(statementInformationBox)
+            statementInformationRow = Gtk.ListBoxRow()
+            statementInformationRow.add(statementInformation)
+            self.contentList.insert(statementInformationRow, -1)
 
-        statementInformation.add(statementInformationBox)
-        statementInformationRow = Gtk.ListBoxRow()
-        statementInformationRow.add(statementInformation)
-        self.contentList.insert(statementInformationRow, -1)
+            assetStructureAnalysisExp = Gtk.Expander.new("asset structure analysis")   # 资产结构分析
+            assetStructureAnalysisExp.set_expanded(True)
+            assetStructureAnalysisExp.add(assetStructureAnalysisBox(ts_code))
+            assetStructureAnalysisRow = Gtk.ListBoxRow()
+            assetStructureAnalysisRow.add(assetStructureAnalysisExp)
+            self.contentList.insert(assetStructureAnalysisRow, -1)
 
-        assetStructureAnalysisExp = Gtk.Expander.new("asset structure analysis")   # 资产结构分析
-        assetStructureAnalysisExp.set_expanded(True)
-        assetStructureAnalysisExp.add(assetStructureAnalysisBox(ts_code))
-        assetStructureAnalysisRow = Gtk.ListBoxRow()
-        assetStructureAnalysisRow.add(assetStructureAnalysisExp)
-        self.contentList.insert(assetStructureAnalysisRow, -1)
+            profitabilityAnalysisExp = Gtk.Expander.new("analysis of profitability")  # 盈利能力分析
+            profitabilityAnalysisExp.set_expanded(True)
+            profitabilityAnalysisExp.add(profitabilityAnalysisBox(ts_code))
+            profitabilityAnalysisRow = Gtk.ListBoxRow()
+            profitabilityAnalysisRow.add(profitabilityAnalysisExp)
+            self.contentList.insert(profitabilityAnalysisRow, -1)
 
-        profitabilityAnalysisExp = Gtk.Expander.new("analysis of profitability")  # 盈利能力分析
-        profitabilityAnalysisExp.set_expanded(True)
-        profitabilityAnalysisExp.add(profitabilityAnalysisBox(ts_code))
-        profitabilityAnalysisRow = Gtk.ListBoxRow()
-        profitabilityAnalysisRow.add(profitabilityAnalysisExp)
-        self.contentList.insert(profitabilityAnalysisRow, -1)
+            growthAnalysisExp = Gtk.Expander.new("growth analysis")  # 成长性分析
+            growthAnalysisExp.set_expanded(True)
+            growthAnalysisExp.add(growthAnalysisBox(ts_code))
+            growthAnalysisRow = Gtk.ListBoxRow()
+            growthAnalysisRow.add(growthAnalysisExp)
+            self.contentList.insert(growthAnalysisRow, -1)
 
-        growthAnalysisExp = Gtk.Expander.new("growth analysis")  # 成长性分析
-        growthAnalysisExp.set_expanded(True)
-        growthAnalysisExp.add(growthAnalysisBox(ts_code))
-        growthAnalysisRow = Gtk.ListBoxRow()
-        growthAnalysisRow.add(growthAnalysisExp)
-        self.contentList.insert(growthAnalysisRow, -1)
+            operationalCapabilityAnalysisExp = Gtk.Expander.new("operational capability analysis")  # 运营能力分析
+            operationalCapabilityAnalysisExp.set_expanded(True)
+            operationalCapabilityAnalysisExp.add(operationalCapabilityAnalysisBox(ts_code))
+            operationalCapabilityAnalysisRow = Gtk.ListBoxRow()
+            operationalCapabilityAnalysisRow.add(operationalCapabilityAnalysisExp)
+            self.contentList.insert(operationalCapabilityAnalysisRow, -1)
 
-        operationalCapabilityAnalysisExp = Gtk.Expander.new("operational capability analysis")  # 运营能力分析
-        operationalCapabilityAnalysisExp.set_expanded(True)
-        operationalCapabilityAnalysisExp.add(operationalCapabilityAnalysisBox(ts_code))
-        operationalCapabilityAnalysisRow = Gtk.ListBoxRow()
-        operationalCapabilityAnalysisRow.add(operationalCapabilityAnalysisExp)
-        self.contentList.insert(operationalCapabilityAnalysisRow, -1)
+            solvencyAnalysisExp = Gtk.Expander.new("Solvency analysis")  # 偿债能力分析
+            solvencyAnalysisExp.set_expanded(True)
+            solvencyAnalysisExp.add(solvencyAnalysisBox(ts_code))
+            solvencyAnalysisRow = Gtk.ListBoxRow()
+            solvencyAnalysisRow.add(solvencyAnalysisExp)
+            self.contentList.insert(solvencyAnalysisRow, -1)
 
-        solvencyAnalysisExp = Gtk.Expander.new("Solvency analysis")  # 偿债能力分析
-        solvencyAnalysisExp.set_expanded(True)
-        solvencyAnalysisExp.add(solvencyAnalysisBox(ts_code))
-        solvencyAnalysisRow = Gtk.ListBoxRow()
-        solvencyAnalysisRow.add(solvencyAnalysisExp)
-        self.contentList.insert(solvencyAnalysisRow, -1)
+            cashFlowAnalysisExp = Gtk.Expander.new("Cash flow analysis")  # 现金流量分析
+            cashFlowAnalysisExp.set_expanded(True)
+            cashFlowAnalysisExp.add(cashFlowAnalysisBox(ts_code))
+            cashFlowAnalysisRow = Gtk.ListBoxRow()
+            cashFlowAnalysisRow.add(cashFlowAnalysisExp)
+            self.contentList.insert(cashFlowAnalysisRow, -1)
 
-        cashFlowAnalysisExp = Gtk.Expander.new("Cash flow analysis")  # 现金流量分析
-        cashFlowAnalysisExp.set_expanded(True)
-        cashFlowAnalysisExp.add(cashFlowAnalysisBox(ts_code))
-        cashFlowAnalysisRow = Gtk.ListBoxRow()
-        cashFlowAnalysisRow.add(cashFlowAnalysisExp)
-        self.contentList.insert(cashFlowAnalysisRow, -1)
-
-
+            self.add(self.contentList)
+    
+    def addList(self, list):
+        self.contentList.insert(list, -1)
         self.add(self.contentList)
 
 class Card(Gtk.Box):
@@ -1484,12 +1491,23 @@ class Card(Gtk.Box):
         'tab_clicked': (GObject.SIGNAL_RUN_FIRST, None,
                         (str,))
     }
-    def __init__(self, ts_code):
+
+    def __init__(self, ts_code=None):
         super(Gtk.Box, self).__init__()
-        self.tabItem = TabItem(ts_code)
-        self.content = Content(ts_code)
-        self.tabItem.close.connect("clicked", self.on_close_clicked)
-        self.tabItem.name.connect("clicked", self.on_tab_clicked)
+        if ts_code is None:
+            self.tabItem = TabItem()
+            self.content = Content()
+        else:
+            self.tabItem = TabItem(ts_code)
+            self.content = Content(ts_code)
+            self.tabItem.close.connect("clicked", self.on_close_clicked)
+            self.tabItem.name.connect("clicked", self.on_tab_clicked)
+
+    def setItemName(self, s):
+        self.tabItem.setName(s)
+    
+    def setContent(self, list):
+        self.content.addList(list)
 
     def on_close_clicked(self, *str):
         self.emit("close_clicked", self.tabItem.getFullName())
@@ -1520,6 +1538,18 @@ class UI_Display(Gtk.Box):
             self.__addPage(name)
 
         self.switch(name)
+
+    def addCard(self, _name, _content):
+        if(_name not in self.cards):
+            card = Card()
+            card.setItemName(_name)
+            card.setContent(_content)
+            self.cards[_name] = card
+            self.cards[_name].connect("close_clicked", self.on_close_clicked, str)
+            self.cards[_name].connect("tab_clicked", self.on_tab_clicked, str)
+            self.__addPage(_name)
+
+        self.switch(_name)
 
     def __addPage(self, name):
         self.tabBar.pack_start(self.cards[name].tabItem, False, False, 1)
@@ -1606,6 +1636,10 @@ class UI_Window(Gtk.Window):
 
     def whenOpenProgram(self):
         self.search.on_refresh_clicked(self.search)
+        list = Gtk.ListBoxRow()
+        welcome_label = Gtk.Label("这是欢迎界面")
+        list.add(welcome_label)
+        self.display.addCard("Welcome", list)
         return False
 
     # *欢迎界面
