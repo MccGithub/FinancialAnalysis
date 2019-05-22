@@ -1500,8 +1500,9 @@ class Card(Gtk.Box):
         else:
             self.tabItem = TabItem(ts_code)
             self.content = Content(ts_code)
-            self.tabItem.close.connect("clicked", self.on_close_clicked)
-            self.tabItem.name.connect("clicked", self.on_tab_clicked)
+
+        self.tabItem.close.connect("clicked", self.on_close_clicked)
+        self.tabItem.name.connect("clicked", self.on_tab_clicked)
 
     def setItemName(self, s):
         self.tabItem.setName(s)
@@ -1590,6 +1591,7 @@ class UI_Display(Gtk.Box):
         self.show_all()
 
     def on_close_clicked(self, *str):
+        print("close_clicked" + str[1])
         self.deleteCardByName(str[1])
 
     def on_tab_clicked(self, *str):
@@ -1637,8 +1639,8 @@ class UI_Window(Gtk.Window):
     def whenOpenProgram(self):
         self.search.on_refresh_clicked(self.search)
         list = Gtk.ListBoxRow()
-        welcome_label = Gtk.Label("欢迎使用本财务分析软件\n你可以通过此软件更加快速的分析出上市公司的财务状况\n本软件的财务分析采用哈佛分析框架中的财务分析方法\n\n\n\n")
-        # welcome_label = Gtk.Image.new_from_file("Icons/refresh.png")
+        # welcome_label = Gtk.Label("欢迎使用本财务分析软件\n你可以通过此软件更加快速的分析出上市公司的财务状况\n本软件的财务分析采用哈佛分析框架中的财务分析方法\n\n\n\n")
+        welcome_label = Gtk.Image.new_from_file("welcome.png")
         welcome_label.set_name("p")
         list.add(welcome_label)
         screen = Gdk.Screen.get_default()
@@ -1649,7 +1651,7 @@ class UI_Window(Gtk.Window):
         )
         css = b"""
         #p {
-            padding-top:5em;
+            padding-top:1em;
             font-size:3em;
             color:blue;
         }
