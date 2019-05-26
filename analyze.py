@@ -46,11 +46,9 @@ def checkDirectory(dirName):
     index = dirName.rfind(os.sep)
     if (index != -1):
         checkDirectory(dirName[:index])
-        if (not os.path.isdir(dirName)):
-            os.mkdir(dirName)
-    else:
-        if (not os.path.isdir(dirName)):
-            os.mkdir(dirName)
+
+    if (not os.path.isdir(dirName)):
+        os.mkdir(dirName)
 
 def packing(_dict):
     box = Gtk.Grid()
